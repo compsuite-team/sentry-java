@@ -52,6 +52,18 @@ class SdkVersionSerializationTest {
         assertEquals(expectedJson, actualJson)
     }
 
+    @Test
+    fun deserializedSDKVersionIsNotAffectedByGlobalStore() {
+        val expectedJson = sanitizedFile("json/sdk_version.json")
+        val initialJson = serialize(fixture.getSut())
+        val actual = deserialize(initialJson)
+        SentryIntegrationPackageStorage.getInstance().addIntegration("ThisIntegrationShouldNotShowUp")
+        SentryIntegrationPackageStorage.getInstance().addPackage("ThisPackageShouldNotShowUp", "test")
+        val finalJson = serialize(actual)
+
+        assertEquals(expectedJson, finalJson)
+    }
+
     // Helper
 
     private fun sanitizedFile(path: String): String {
